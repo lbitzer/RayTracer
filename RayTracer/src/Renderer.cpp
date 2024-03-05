@@ -24,17 +24,29 @@ void Renderer::OnResize(uint32_t width, uint32_t height)
 
 void Renderer::Render()
 {
-    for (uint32_t i = 0; i < m_FinalImage->GetWidth() * m_FinalImage->GetHeight(); i++)
+    for (uint32_t y = 0; y < m_FinalImage->GetHeight(); y++)
     {
-        m_ImageData[i] = Walnut::Random::UInt();
-        m_ImageData[i] |= 0xff000000;
+        for (uint32_t x = 0; x < m_FinalImage->GetWidth(); x++)
+        {
 
-        // check if the point satisfys the equation with 1 or more intersections
-        // 1. Equation of the sphere, take the current position of the pixel, transform into (x,y) coordinate
-        // 2. Equation of the ray - Has to do with the camera? Every pixel can be used to create a ray
-        // 3. Discriminant to see if the ray intersects with the sphere or not
+            glm::vec2 coord = {x / static_cast<float>(m_FinalImage->GetWidth()), y / static_cast<float>(m_FinalImage->GetHeight())};
+            
+            m_ImageData[y*m_FinalImage->GetWidth() + x] =  PerPixel(coord);
+
+            // check if the point satisfys the equation with 1 or more intersections
+            // 1. Equation of the sphere, take the current position of the pixel, transform into (x,y) coordinate
+            // 2. Equation of the ray - Has to do with the camera? Every pixel can be used to create a ray
+            // 3. Discriminant to see if the ray intersects with the sphere or not
+        }
     }
-
     m_FinalImage->SetData(m_ImageData);
 
+}
+
+uint32_t Renderer::PerPixel(glm::vec2 coord)
+{
+    uint8_t r = (uint8_t)(coord.x * 255.0f);
+    uint8_t g = (uint8_t)(coord.y * 255.0f);
+
+    return 0xff000000 | (g << 8) | r;
 }
