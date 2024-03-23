@@ -94,7 +94,12 @@ glm::vec4 Renderer::PerPixel(glm::vec2 coord)
     glm::vec3 hitPoint = rayOrigin + rayDirection * t1;
     glm::vec3 normal = glm::normalize(hitPoint);
 
-    sphereColor = normal * 0.5f + 0.5f; // Converts range from -1 to 1 into 0 to 1
-        
+    glm::vec3 lightDir = glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f));
+
+    float d = glm::dot(normal, -lightDir); // since the dot product of two unit vectors is the same as the cos of the angle between them
+    d = glm::max(d, 0.0f); // if the face is facing 90 degrees away from the light source, that's as dark as it will get, since there is no other light source or any surfaces to reflect off of yet, so we don't need to handle any angles greater than 90 degrees.
+
+    //sphereColor = normal * 0.5f + 0.5f; // Converts range from -1 to 1 into 0 to 1
+    sphereColor *= d; // I want to use the angle between the light source and the normal to scale the intensity of the color on the sphere
     return glm::vec4(sphereColor, 1.0f);
 }
